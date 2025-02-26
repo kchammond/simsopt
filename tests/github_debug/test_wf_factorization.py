@@ -2,7 +2,10 @@ import unittest
 import numpy as np
 import scipy
 from simsopt.geo import SurfaceRZFourier, ToroidalWireframe
-from simsopt.solve import optimize_wireframe
+from simsopt.solve import optimize_wireframe, \
+                          bnorm_obj_matrices, \
+                          rcls_wireframe, \
+                          regularized_constrained_least_squares
 
 def print_matrix(M):
 
@@ -52,6 +55,7 @@ class WireframeFactorizationTests(unittest.TestCase):
         
     def test_3_2x4_wf_rcls(self):
 
+        reg_W = 1e-10
         surf_plas = SurfaceRZFourier(nfp=2)
         surf_wf = SurfaceRZFourier(nfp=2)
         surf_wf.extend_via_normal(1.0)
@@ -104,8 +108,17 @@ class WireframeFactorizationTests(unittest.TestCase):
         print('        R.T[:,:6] = ')
         print_matrix(R3.T[:,:6])
 
+        print('Calling regularized_constrained_least_squares')
+        A4, b4 = bnorm_obj_matrices(wf, surf_plas)
+        C4, d4 = wf.constraint_matrices(assume_no_crossings=False,
+                                        remove_constrained_segments=True)
+        x4 = regularized_constrained_least_squares(A4, b4, reg_W, C4, d4)
 
-        print('Now calling RCLS')
-        res = optimize_wireframe(wf, 'rcls', {'reg_W': 1e-10}, 
+        print('Calling rcls_wireframe')
+        A5, b5 = bnorm_obj_matrices(wf, surf_plas)
+        x5, f_B5, f_R5, f5 = rcls_wireframe(wf, A5, b5, reg_W, False, True)
+
+        print('Calling optimize_wireframe')
+        res = optimize_wireframe(wf, 'rcls', {'reg_W': reg_W}, 
                                  surf_plas=surf_plas)
 
