@@ -791,6 +791,20 @@ def regularized_constrained_least_squares(A, b, W, C, d):
     print('    RCLS: dvec all finite: ', np.all(np.isfinite(dvec)))
     print('    RCLS: Shape of dvec: ', dvec.shape)
 
+    print('    RCLS: Ctra matrix:')
+    for i in range(Ctra.shape[0]):
+        line = '        '
+        for j in range(Ctra.shape[1]):
+            line += '%5.2f  ' % (Ctra[i][j])
+        print(line)
+
+    print('    RCLS: Rmat.T matrix:')
+    for i in range(Rmat.T.shape[0]):
+        line = '        '
+        for j in range(Rmat.T.shape[1]):
+            line += '%5.2f  ' % (Rmat.T[i][j])
+        print(line)
+
     # SOLVE: Rmat.T * uvec = dvec
     # uvec = coefficients for basis vectors from constrained subspace
     uvec = scipy.linalg.solve_triangular(Rmat.T, dvec, lower=True)

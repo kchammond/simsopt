@@ -1,6 +1,11 @@
 name: Linting
 
-on: [push, pull_request]
+#on: [push, pull_request]
+on: 
+  push:
+    branches-ignore: [wireframe_github_debug]
+  pull_request:
+    branches-ignore: [wireframe_github_debug]
 
 jobs:
   CI:
