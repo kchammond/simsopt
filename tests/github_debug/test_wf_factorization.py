@@ -134,16 +134,110 @@ class WireframeFactorizationTests(unittest.TestCase):
         print('        R.T[:,:6] = ')
         print_matrix(Rmat.T[:,:6])
 
-        print('Performing the exact sequence of steps in regularized_constrained_least_squares up to QR')
-        A5, b5 = bnorm_obj_matrices(wf, surf_plas)
+        print('Performing the seemingly relevant steps plus d operations')
         C5, d5 = wf.constraint_matrices(assume_no_crossings=False,
                                         remove_constrained_segments=True)
 
         # Recast inputs as Numpy arrays
-        Amat = np.array(A5)
-        bvec = np.array(b5).reshape((-1,1))
         Ctra = np.array(C5).T # Transpose will be used for the calculations
         dvec = np.array(d5).reshape((-1,1))
+    
+        # Check the inputs
+        n_C, p = Ctra.shape
+                
+        # Compute the QR factorization of the transpose of the constraint matrix
+        Qfull, Rtall = scipy.linalg.qr(Ctra)
+        Q1mat = Qfull[:,:p]  # Orthonormal vectors in the constrained subspace
+        Q2mat = Qfull[:,p:]  # Orthonormal vectors in the free subspace
+        Rmat = Rtall[:p,:]
+
+        print('    Transpose of constraint matrix:')
+        print_matrix(Ctra)
+        print('    R from QR-factorization:')
+        if np.all(np.isfinite(Rmat)):
+            print('        Contains no infinite/NaN elements!')
+        else:
+            print('        Contains some infinite/NaN elements!')
+        print('        R.T[:,:6] = ')
+        print_matrix(Rmat.T[:,:6])
+
+        print('Performing the seemingly relevant steps plus A, b, and d operations')
+        A6, b6 = bnorm_obj_matrices(wf, surf_plas)
+        C6, d6 = wf.constraint_matrices(assume_no_crossings=False,
+                                        remove_constrained_segments=True)
+
+        # Recast inputs as Numpy arrays
+        Amat = np.array(A6)
+        bvec = np.array(b6).reshape((-1,1))
+        Ctra = np.array(C6).T # Transpose will be used for the calculations
+        dvec = np.array(d6).reshape((-1,1))
+    
+        # Check the inputs
+        m, n = Amat.shape
+        n_C, p = Ctra.shape
+                
+        # Compute the QR factorization of the transpose of the constraint matrix
+        Qfull, Rtall = scipy.linalg.qr(Ctra)
+        Q1mat = Qfull[:,:p]  # Orthonormal vectors in the constrained subspace
+        Q2mat = Qfull[:,p:]  # Orthonormal vectors in the free subspace
+        Rmat = Rtall[:p,:]
+
+        print('    Transpose of constraint matrix:')
+        print_matrix(Ctra)
+        print('    R from QR-factorization:')
+        if np.all(np.isfinite(Rmat)):
+            print('        Contains no infinite/NaN elements!')
+        else:
+            print('        Contains some infinite/NaN elements!')
+        print('        R.T[:,:6] = ')
+        print_matrix(Rmat.T[:,:6])
+
+        print('Performing the seemingly relevant steps plus A, b, d, and W operations')
+        A7, b7 = bnorm_obj_matrices(wf, surf_plas)
+        C7, d7 = wf.constraint_matrices(assume_no_crossings=False,
+                                        remove_constrained_segments=True)
+
+        # Recast inputs as Numpy arrays
+        Amat = np.array(A7)
+        bvec = np.array(b7).reshape((-1,1))
+        Ctra = np.array(C7).T # Transpose will be used for the calculations
+        dvec = np.array(d7).reshape((-1,1))
+    
+        # Check the inputs
+        m, n = Amat.shape
+        n_C, p = Ctra.shape
+                
+        if np.isscalar(reg_W):
+            Wmat = reg_W*np.eye(n)
+        else:
+            print('Unexpected W operation needed!')
+
+        # Compute the QR factorization of the transpose of the constraint matrix
+        Qfull, Rtall = scipy.linalg.qr(Ctra)
+        Q1mat = Qfull[:,:p]  # Orthonormal vectors in the constrained subspace
+        Q2mat = Qfull[:,p:]  # Orthonormal vectors in the free subspace
+        Rmat = Rtall[:p,:]
+
+        print('    Transpose of constraint matrix:')
+        print_matrix(Ctra)
+        print('    R from QR-factorization:')
+        if np.all(np.isfinite(Rmat)):
+            print('        Contains no infinite/NaN elements!')
+        else:
+            print('        Contains some infinite/NaN elements!')
+        print('        R.T[:,:6] = ')
+        print_matrix(Rmat.T[:,:6])
+
+        print('Performing the exact sequence of steps in regularized_constrained_least_squares up to QR')
+        A8, b8 = bnorm_obj_matrices(wf, surf_plas)
+        C8, d8 = wf.constraint_matrices(assume_no_crossings=False,
+                                        remove_constrained_segments=True)
+
+        # Recast inputs as Numpy arrays
+        Amat = np.array(A8)
+        bvec = np.array(b8).reshape((-1,1))
+        Ctra = np.array(C8).T # Transpose will be used for the calculations
+        dvec = np.array(d8).reshape((-1,1))
     
         # Check the inputs
         m, n = Amat.shape
@@ -190,14 +284,14 @@ class WireframeFactorizationTests(unittest.TestCase):
 
 
         print('Calling regularized_constrained_least_squares')
-        A6, b6 = bnorm_obj_matrices(wf, surf_plas)
-        C6, d6 = wf.constraint_matrices(assume_no_crossings=False,
+        A9, b9 = bnorm_obj_matrices(wf, surf_plas)
+        C9, d9 = wf.constraint_matrices(assume_no_crossings=False,
                                         remove_constrained_segments=True)
-        x6 = regularized_constrained_least_squares(A6, b6, reg_W, C6, d6)
+        x9 = regularized_constrained_least_squares(A9, b9, reg_W, C9, d9)
 
         print('Calling rcls_wireframe')
-        A7, b7 = bnorm_obj_matrices(wf, surf_plas)
-        x7, f_B7, f_R7, f7 = rcls_wireframe(wf, A7, b7, reg_W, False, True)
+        A10, b10 = bnorm_obj_matrices(wf, surf_plas)
+        x10, f_B10, f_R10, f10 = rcls_wireframe(wf, A10, b10, reg_W, False, True)
 
         print('Calling optimize_wireframe')
         res = optimize_wireframe(wf, 'rcls', {'reg_W': reg_W}, 
