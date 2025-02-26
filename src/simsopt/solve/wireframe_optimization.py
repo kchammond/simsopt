@@ -778,8 +778,7 @@ def regularized_constrained_least_squares(A, b, W, C, d):
             raise ValueError('W must be a scalar, 1d array, or 2d array')
             
     # Compute the QR factorization of the transpose of the constraint matrix
-    #Qfull, Rtall = scipy.linalg.qr(Ctra)
-    Qfull, Rtall = np.linalg.qr(Ctra, mode='complete')
+    Qfull, Rtall = scipy.linalg.qr(Ctra)
     Q1mat = Qfull[:,:p]  # Orthonormal vectors in the constrained subspace
     Q2mat = Qfull[:,p:]  # Orthonormal vectors in the free subspace
     Rmat = Rtall[:p,:]

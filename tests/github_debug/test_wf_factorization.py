@@ -46,8 +46,8 @@ class WireframeFactorizationTests(unittest.TestCase):
             print('    Contains some infinite/NaN elements!')
         print('    R.T = ')
         print_matrix(R.T)
-        print('    Q = ')
-        print_matrix(Q)
+        #print('    Q = ')
+        #print_matrix(Q)
 
         
     def test_3_2x4_wf_rcls(self):
@@ -71,8 +71,23 @@ class WireframeFactorizationTests(unittest.TestCase):
             print('        Contains some infinite/NaN elements!')
         print('        R.T[:,:6] = ')
         print_matrix(R.T[:,:6])
-        print('    Q = ')
-        print_matrix(Q)
+        #print('    Q = ')
+        #print_matrix(Q)
+
+        print('Redoing with some of the intermediate operations from RCLS')
+        Ctra = np.array(C).T
+        print('    Transpose of constraint matrix:')
+        print_matrix(Ctra)
+        Q2, R2 = scipy.linalg.qr(Ctra)
+        print('    R from QR-factorization of 2x4 wf constr matrix (processed):')
+        if np.all(np.isfinite(R2)):
+            print('        Contains no infinite/NaN elements!')
+        else:
+            print('        Contains some infinite/NaN elements!')
+        print('        R.T[:,:6] = ')
+        print_matrix(R2.T[:,:6])
+        #print('    Q = ')
+        #print_matrix(Q2)
 
         print('Now calling RCLS')
         res = optimize_wireframe(wf, 'rcls', {'reg_W': 1e-10}, 
