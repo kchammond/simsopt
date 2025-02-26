@@ -783,6 +783,14 @@ def regularized_constrained_least_squares(A, b, W, C, d):
     Q2mat = Qfull[:,p:]  # Orthonormal vectors in the free subspace
     Rmat = Rtall[:p,:]
 
+    # For debugging
+    print('    RCLS: Ctra all finite: ', np.all(np.isfinite(Ctra)))
+    print('    RCLS: Shape of Ctra: ', Ctra.shape)
+    print('    RCLS: Rmat.T all finite: ', np.all(np.isfinite(Rmat.T)))
+    print('    RCLS: Shape of Rmat.T: ', Rmat.T.shape)
+    print('    RCLS: dvec all finite: ', np.all(np.isfinite(dvec)))
+    print('    RCLS: Shape of dvec: ', dvec.shape)
+
     # SOLVE: Rmat.T * uvec = dvec
     # uvec = coefficients for basis vectors from constrained subspace
     uvec = scipy.linalg.solve_triangular(Rmat.T, dvec, lower=True)

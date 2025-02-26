@@ -2,7 +2,12 @@ name: Wheel Builder
 
 # This file is based on https://github.com/pypa/cibuildwheel/blob/main/examples/github-deploy.yml
 
-on: [push, pull_request]
+#on: [push, pull_request]
+on: 
+  push:
+    branches-ignore: [wireframe_github_debug]
+  pull_request:
+    branches-ignore: [wireframe_github_debug]
 
 jobs:
   build_wheels:

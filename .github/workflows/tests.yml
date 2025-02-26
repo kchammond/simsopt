@@ -54,10 +54,10 @@ jobs:
         set -ex
         which python
 
-    - name: apt-get stuff needed for libstell and vmec
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential gfortran openmpi-bin libopenmpi-dev libnetcdf-dev libnetcdff-dev liblapack-dev libscalapack-mpi-dev libhdf5-dev libhdf5-serial-dev git m4 libfftw3-dev libboost-all-dev libopenblas-dev
+#    - name: apt-get stuff needed for libstell and vmec
+#      run: |
+#        sudo apt-get update
+#        sudo apt-get install -y build-essential gfortran openmpi-bin libopenmpi-dev libnetcdf-dev libnetcdff-dev liblapack-dev libscalapack-mpi-dev libhdf5-dev libhdf5-serial-dev git m4 libfftw3-dev libboost-all-dev libopenblas-dev
 
     - uses: actions/checkout@v4
 
@@ -65,8 +65,8 @@ jobs:
       run: git fetch --all --tags --prune --unshallow
 
     # We must run actions/checkout before downloading and building VMEC, since checkout deletes the contents of the directory.
-    - name: Download the VMEC2000 standalone repository
-      run: git clone --depth=1 https://github.com/hiddensymmetries/VMEC2000.git
+#    - name: Download the VMEC2000 standalone repository
+#      run: git clone --depth=1 https://github.com/hiddensymmetries/VMEC2000.git
 
     - name: ls -l again
       run: |
@@ -98,46 +98,46 @@ jobs:
     - name: Install pyoculus
       run: pip install -v git+https://github.com/zhisong/pyoculus
 
-    - name: Install booz_xform
-      run: pip install -v git+https://github.com/hiddenSymmetries/booz_xform
+#    - name: Install booz_xform
+#      run: pip install -v git+https://github.com/hiddenSymmetries/booz_xform
 
-    - name: Install virtual_casing
-      run: pip install -v git+https://github.com/hiddenSymmetries/virtual-casing
+#    - name: Install virtual_casing
+#      run: pip install -v git+https://github.com/hiddenSymmetries/virtual-casing
 
     # See https://github.community/t/best-way-to-clone-a-private-repo-during-script-run-of-private-github-action/16116/7
     # https://stackoverflow.com/questions/57612428/cloning-private-github-repository-within-organisation-in-actions
     # https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token
-    - name: Check out SPEC
-      uses: actions/checkout@v4
-      with:
-        repository: PrincetonUniversity/SPEC
-        path: SPEC
+#    - name: Check out SPEC
+#      uses: actions/checkout@v4
+#      with:
+#        repository: PrincetonUniversity/SPEC
+#        path: SPEC
      
     - name: ls -l again
       run: |
         ls -l
         pwd
 
-    - name: ls -l inside SPEC
-      run: |
-        cd SPEC
-        pwd
-        ls -l
+#    - name: ls -l inside SPEC
+#      run: |
+#        cd SPEC
+#        pwd
+#        ls -l
 
     # For some reason, installing py_spec does not install the dependencies f90nml and h5py. Therefore I installed these manually above.
-    - name: Install py_spec
-      run: |
-        pip install -r SPEC/Utilities/pythontools/requirements.txt
-        pip install -e SPEC/Utilities/pythontools
-        python -c "import py_spec; print('success')"
+#    - name: Install py_spec
+#      run: |
+#        pip install -r SPEC/Utilities/pythontools/requirements.txt
+#        pip install -e SPEC/Utilities/pythontools
+#        python -c "import py_spec; print('success')"
 
-    - name: Build SPEC python wrapper.
-      run: |
-        cd SPEC
-        pip install .
+#    - name: Build SPEC python wrapper.
+#      run: |
+#        cd SPEC
+#        pip install .
 
-    - name: Try import spec
-      run: python -c "import spec.spec_f90wrapped as spec; print(spec.constants.version)"
+#    - name: Try import spec
+#      run: python -c "import spec.spec_f90wrapped as spec; print(spec.constants.version)"
 
     - name: ls in /usr/lib/x86_64-linux-gnu
       run: ls -l /usr/lib/x86_64-linux-gnu
@@ -148,22 +148,23 @@ jobs:
     - name: env after adding to LD_LIBRARY_PATH
       run: env
 
-    - name: ls in VMEC2000/python 1
-      run: ls -l VMEC2000/python
+#    - name: ls in VMEC2000/python 1
+#      run: ls -l VMEC2000/python
 
-    - name: Configure and install VMEC2000 module
-      run: |
-        cd VMEC2000
-        cp cmake/machines/ubuntu.json cmake_config_file.json
-        cat cmake_config_file.json
-        pip install .
+#    - name: Configure and install VMEC2000 module
+#      run: |
+#        cd VMEC2000
+#        cp cmake/machines/ubuntu.json cmake_config_file.json
+#        cat cmake_config_file.json
+#        pip install .
 
-    - name: Try importing vmec module
-      run: python -c "print(dir()); import vmec; print(dir()); print(dir(vmec)); print('package:', vmec.__package__); print('spec:', vmec.__spec__); print('doc:', vmec.__doc__); print('file:', vmec.__file__); print('path:', vmec.__path__)"
+#    - name: Try importing vmec module
+#      run: python -c "print(dir()); import vmec; print(dir()); print(dir(vmec)); print('package:', vmec.__package__); print('spec:', vmec.__spec__); print('doc:', vmec.__doc__); print('file:', vmec.__file__); print('path:', vmec.__path__)"
 
     - name: Install simsopt package
       # run: env CMAKE_BUILD_TYPE=Debug pip install -v .[MPI,SPEC]
-      run: pip install -v ".[MPI,SPEC,VIS]"
+      #run: pip install -v ".[MPI,SPEC,VIS]"
+      run: pip install -v ".[MPI]"
 
     - name: Verify that importing simsopt does not automatically initialize MPI
       run: ./tests/verify_MPI_not_initialized.py
@@ -173,10 +174,10 @@ jobs:
       run: |
         cd examples
         ./run_serial_examples
-        ./run_parallel_examples
-        ./run_vmec_examples
-        ./run_spec_examples
-        ./run_spec_vmec_examples
+#        ./run_parallel_examples
+#        ./run_vmec_examples
+#        ./run_spec_examples
+#        ./run_spec_vmec_examples
 
     - name: Install coverage dependencies
       if: contains(matrix.test-type, 'unit')
@@ -185,20 +186,20 @@ jobs:
     - name: Run tests on 1 process using coverage
       if: contains(matrix.test-type, 'unit')
       run: | 
-        coverage run --source=simsopt -m unittest discover -t tests -v -s tests/core
+#        coverage run --source=simsopt -m unittest discover -t tests -v -s tests/core
         coverage run --source=simsopt -m unittest discover -t tests -v -s tests/field
         coverage run --source=simsopt -m unittest discover -t tests -v -s tests/geo
-        coverage run --source=simsopt -m unittest discover -t tests -v -s tests/mhd
-        coverage run --source=simsopt -m unittest discover -t tests -v -s tests/objectives
+#        coverage run --source=simsopt -m unittest discover -t tests -v -s tests/mhd
+#        coverage run --source=simsopt -m unittest discover -t tests -v -s tests/objectives
         coverage run --source=simsopt -m unittest discover -t tests -v -s tests/solve
-        coverage run --source=simsopt -m unittest discover -t tests -v -s tests/util
+#        coverage run --source=simsopt -m unittest discover -t tests -v -s tests/util
 
-    - name: Run MPI tests using coverage
-      if: contains(matrix.test-type, 'unit')
-      run: | 
-        mpiexec -n 1 coverage run -m unittest discover -k "mpi" -s tests -v
-        mpiexec -n 2 coverage run -m unittest discover -k "mpi" -s tests -v
-        mpiexec -n 3 --oversubscribe coverage run -m unittest discover -k "mpi" -s tests -v
+#    - name: Run MPI tests using coverage
+#      if: contains(matrix.test-type, 'unit')
+#      run: | 
+#        mpiexec -n 1 coverage run -m unittest discover -k "mpi" -s tests -v
+#        mpiexec -n 2 coverage run -m unittest discover -k "mpi" -s tests -v
+#        mpiexec -n 3 --oversubscribe coverage run -m unittest discover -k "mpi" -s tests -v
 
     - name: ls to see coverage files that were produced
       if: contains(matrix.test-type, 'unit')

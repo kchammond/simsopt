@@ -10,10 +10,10 @@ name: Tests with no XSIMD
 
 on: 
   push:
-    branches-ignore: [master]
+    branches-ignore: [master, wireframe_github_debug]
     tags-ignore: [v*]
   pull_request:
-    branches-ignore: [master]
+    branches-ignore: [master, wireframe_github_debug]
 
 jobs:
   test:

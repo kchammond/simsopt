@@ -6,6 +6,7 @@ on:
       - '**'
     tags: 
       - v*
+    branches-ignore: [wireframe_github_debug]
   pull_request:
     branches:
       - master
