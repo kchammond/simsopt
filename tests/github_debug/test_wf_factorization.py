@@ -74,7 +74,7 @@ class WireframeFactorizationTests(unittest.TestCase):
         #print('    Q = ')
         #print_matrix(Q)
 
-        print('Redoing with some of the intermediate operations from RCLS')
+        print('Redoing with processing of C as done by RCLS function')
         Ctra = np.array(C).T
         print('    Transpose of constraint matrix:')
         print_matrix(Ctra)
@@ -88,6 +88,22 @@ class WireframeFactorizationTests(unittest.TestCase):
         print_matrix(R2.T[:,:6])
         #print('    Q = ')
         #print_matrix(Q2)
+
+        print('Redoing, matching all operations on C')
+        C3, d3 = wf.constraint_matrices(assume_no_crossings=False,
+                                        remove_constrained_segments=True)
+        C3tra = np.array(C3).T
+        print('    Transpose of constraint matrix:')
+        print_matrix(C3tra)
+        Q3, R3 = scipy.linalg.qr(C3tra)
+        print('    R from QR-factorization of 2x4 wf constr matrix (processed):')
+        if np.all(np.isfinite(R3)):
+            print('        Contains no infinite/NaN elements!')
+        else:
+            print('        Contains some infinite/NaN elements!')
+        print('        R.T[:,:6] = ')
+        print_matrix(R3.T[:,:6])
+
 
         print('Now calling RCLS')
         res = optimize_wireframe(wf, 'rcls', {'reg_W': 1e-10}, 
