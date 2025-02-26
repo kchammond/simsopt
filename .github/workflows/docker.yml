@@ -2,10 +2,6 @@ name: docker container
 
 on: 
   push:
-    branches: 
-      - '**'
-    tags: 
-      - v*
     branches-ignore: [wireframe_github_debug]
   pull_request:
     branches:
