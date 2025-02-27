@@ -2,6 +2,7 @@ import unittest
 import numpy as np
 import scipy
 from simsopt.geo import SurfaceRZFourier, ToroidalWireframe
+from simsopt.field import WireframeField
 from simsopt.solve import optimize_wireframe, \
                           bnorm_obj_matrices, \
                           rcls_wireframe, \
@@ -425,4 +426,82 @@ class WireframeFactorizationTests(unittest.TestCase):
         print('Trial 14: Calling optimize_wireframe')
         res = optimize_wireframe(wf, 'rcls', {'reg_W': reg_W}, 
                                  surf_plas=surf_plas)
+
+    def test_4_min_working(self):
+
+        surf_plas = SurfaceRZFourier(nfp=2)
+        surf_wf = SurfaceRZFourier(nfp=2)
+        surf_wf.extend_via_normal(1.0)
+        wf = ToroidalWireframe(surf_wf, 2, 4)
+ 
+        print('Trial 1: forming A, b and then finding QR of unrelated matrix')
+        A, b = bnorm_obj_matrices(wf, surf_plas)
+        print('  First QR evaluation:')
+        Q, R = scipy.linalg.qr(np.eye(6))
+        if np.all(np.isfinite(R)):
+            print('   R Contains no infinite/NaN elements.')
+        else:
+            print('   R Contains some infinite/NaN elements!!!')
+        print('  Second QR evaluation:')
+        Q, R = scipy.linalg.qr(np.eye(6))
+        if np.all(np.isfinite(R)):
+            print('   R Contains no infinite/NaN elements.')
+        else:
+            print('   R Contains some infinite/NaN elements!!!')
+
+
+        print('Trial 2: calculating a WireframeField, then finding QR of unrelated matrix')
+        print('  2a: forming the wireframe field')
+        mf_wf = WireframeField(wf)
+        print('    First QR evaluation:')
+        Q, R = scipy.linalg.qr(np.eye(6))
+        if np.all(np.isfinite(R)):
+            print('     R Contains no infinite/NaN elements.')
+        else:
+            print('     R Contains some infinite/NaN elements!!!')
+        print('    Second QR evaluation:')
+        Q, R = scipy.linalg.qr(np.eye(6))
+        if np.all(np.isfinite(R)):
+            print('     R Contains no infinite/NaN elements.')
+        else:
+            print('     R Contains some infinite/NaN elements!!!')
+        print('  2b: setting the points')
+        mf_wf.set_points(surf_plas.gamma().reshape((-1,3)))
+        Q, R = scipy.linalg.qr(np.eye(6))
+        if np.all(np.isfinite(R)):
+            print('     R Contains no infinite/NaN elements.')
+        else:
+            print('     R Contains some infinite/NaN elements!!!')
+        print('    Second QR evaluation:')
+        Q, R = scipy.linalg.qr(np.eye(6))
+        if np.all(np.isfinite(R)):
+            print('     R Contains no infinite/NaN elements.')
+        else:
+            print('     R Contains some infinite/NaN elements!!!')
+        print('  2c: calculating the A matrix')
+        A = mf_wf.dBnormal_by_dsegmentcurrents_matrix(surf_plas)
+        Q, R = scipy.linalg.qr(np.eye(6))
+        if np.all(np.isfinite(R)):
+            print('     R Contains no infinite/NaN elements.')
+        else:
+            print('     R Contains some infinite/NaN elements!!!')
+        print('    Second QR evaluation:')
+        Q, R = scipy.linalg.qr(np.eye(6))
+        if np.all(np.isfinite(R)):
+            print('     R Contains no infinite/NaN elements.')
+        else:
+            print('     R Contains some infinite/NaN elements!!!')
+        print('  2d: calculating the magnetic field')
+        Bfield = mf_wf.B()
+        Q, R = scipy.linalg.qr(np.eye(6))
+        if np.all(np.isfinite(R)):
+            print('     R Contains no infinite/NaN elements.')
+        else:
+            print('     R Contains some infinite/NaN elements!!!')
+        print('    Second QR evaluation:')
+        Q, R = scipy.linalg.qr(np.eye(6))
+        if np.all(np.isfinite(R)):
+            print('     R Contains no infinite/NaN elements.')
+        else:
+            print('     R Contains some infinite/NaN elements!!!')
 
