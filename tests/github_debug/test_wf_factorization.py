@@ -504,4 +504,17 @@ class WireframeFactorizationTests(unittest.TestCase):
             print('     R Contains no infinite/NaN elements.')
         else:
             print('     R Contains some infinite/NaN elements!!!')
+        print('  2e: calculating derivative of field wrt segment currents')
+        db_dsc = mf_wf.dB_by_dsegmentcurrents(0)
+        Q, R = scipy.linalg.qr(np.eye(6))
+        if np.all(np.isfinite(R)):
+            print('     R Contains no infinite/NaN elements.')
+        else:
+            print('     R Contains some infinite/NaN elements!!!')
+        print('    Second QR evaluation:')
+        Q, R = scipy.linalg.qr(np.eye(6))
+        if np.all(np.isfinite(R)):
+            print('     R Contains no infinite/NaN elements.')
+        else:
+            print('     R Contains some infinite/NaN elements!!!')
 
