@@ -466,6 +466,10 @@ class WireframeFactorizationTests(unittest.TestCase):
         Bfield = mf_wf.B()
         calc_qr_twice()
 
+        print('  2b: setting the points')
+        mf_wf.set_points(surf_plas.gamma().reshape((-1,3)))
+        calc_qr_twice()
+
         print('  2e: calculating derivative of field wrt segment currents')
         dB_dsc = mf_wf.dB_by_dsegmentcurrents(0)
         calc_qr_twice()
