@@ -19,6 +19,20 @@ def print_matrix(M, precise=False):
                 line += '%10.2e ' % (M[i][j])
         print(line)
 
+def calc_qr_twice():
+
+    Q, R = scipy.linalg.qr(np.eye(6))
+    print('    First QR evaluation:')
+    if np.all(np.isfinite(R)):
+        print('     R Contains no infinite/NaN elements.')
+    else:
+        print('     R Contains some infinite/NaN elements!!!')
+    print('    Second QR evaluation:')
+    Q, R = scipy.linalg.qr(np.eye(6))
+    if np.all(np.isfinite(R)):
+        print('     R Contains no infinite/NaN elements.')
+    else:
+        print('     R Contains some infinite/NaN elements!!!')
 
 
 class WireframeFactorizationTests(unittest.TestCase):
@@ -436,85 +450,51 @@ class WireframeFactorizationTests(unittest.TestCase):
  
         print('Trial 1: forming A, b and then finding QR of unrelated matrix')
         A, b = bnorm_obj_matrices(wf, surf_plas)
-        print('  First QR evaluation:')
-        Q, R = scipy.linalg.qr(np.eye(6))
-        if np.all(np.isfinite(R)):
-            print('   R Contains no infinite/NaN elements.')
-        else:
-            print('   R Contains some infinite/NaN elements!!!')
-        print('  Second QR evaluation:')
-        Q, R = scipy.linalg.qr(np.eye(6))
-        if np.all(np.isfinite(R)):
-            print('   R Contains no infinite/NaN elements.')
-        else:
-            print('   R Contains some infinite/NaN elements!!!')
+        calc_qr_twice()
 
 
         print('Trial 2: calculating a WireframeField, then finding QR of unrelated matrix')
         print('  2a: forming the wireframe field')
         mf_wf = WireframeField(wf)
-        print('    First QR evaluation:')
-        Q, R = scipy.linalg.qr(np.eye(6))
-        if np.all(np.isfinite(R)):
-            print('     R Contains no infinite/NaN elements.')
-        else:
-            print('     R Contains some infinite/NaN elements!!!')
-        print('    Second QR evaluation:')
-        Q, R = scipy.linalg.qr(np.eye(6))
-        if np.all(np.isfinite(R)):
-            print('     R Contains no infinite/NaN elements.')
-        else:
-            print('     R Contains some infinite/NaN elements!!!')
+        calc_qr_twice()
+
         print('  2b: setting the points')
         mf_wf.set_points(surf_plas.gamma().reshape((-1,3)))
-        Q, R = scipy.linalg.qr(np.eye(6))
-        if np.all(np.isfinite(R)):
-            print('     R Contains no infinite/NaN elements.')
-        else:
-            print('     R Contains some infinite/NaN elements!!!')
-        print('    Second QR evaluation:')
-        Q, R = scipy.linalg.qr(np.eye(6))
-        if np.all(np.isfinite(R)):
-            print('     R Contains no infinite/NaN elements.')
-        else:
-            print('     R Contains some infinite/NaN elements!!!')
+        calc_qr_twice()
+
         print('  2c: calculating the A matrix')
         A = mf_wf.dBnormal_by_dsegmentcurrents_matrix(surf_plas)
-        Q, R = scipy.linalg.qr(np.eye(6))
-        if np.all(np.isfinite(R)):
-            print('     R Contains no infinite/NaN elements.')
-        else:
-            print('     R Contains some infinite/NaN elements!!!')
-        print('    Second QR evaluation:')
-        Q, R = scipy.linalg.qr(np.eye(6))
-        if np.all(np.isfinite(R)):
-            print('     R Contains no infinite/NaN elements.')
-        else:
-            print('     R Contains some infinite/NaN elements!!!')
+        calc_qr_twice()
+
         print('  2d: calculating the magnetic field')
         Bfield = mf_wf.B()
-        Q, R = scipy.linalg.qr(np.eye(6))
-        if np.all(np.isfinite(R)):
-            print('     R Contains no infinite/NaN elements.')
-        else:
-            print('     R Contains some infinite/NaN elements!!!')
-        print('    Second QR evaluation:')
-        Q, R = scipy.linalg.qr(np.eye(6))
-        if np.all(np.isfinite(R)):
-            print('     R Contains no infinite/NaN elements.')
-        else:
-            print('     R Contains some infinite/NaN elements!!!')
+        calc_qr_twice()
+
         print('  2e: calculating derivative of field wrt segment currents')
-        db_dsc = mf_wf.dB_by_dsegmentcurrents(0)
+        dB_dsc = mf_wf.dB_by_dsegmentcurrents(0)
         Q, R = scipy.linalg.qr(np.eye(6))
-        if np.all(np.isfinite(R)):
-            print('     R Contains no infinite/NaN elements.')
-        else:
-            print('     R Contains some infinite/NaN elements!!!')
-        print('    Second QR evaluation:')
-        Q, R = scipy.linalg.qr(np.eye(6))
-        if np.all(np.isfinite(R)):
-            print('     R Contains no infinite/NaN elements.')
-        else:
-            print('     R Contains some infinite/NaN elements!!!')
+        calc_qr_twice()
+
+        print('  2f: retrieving magnetic field test points')
+        points = mf_wf.get_points_cart_ref()
+        nPoints = len(points)
+        calc_qr_twice()
+
+        print('  2g: calculating the unit normal')
+        n = surf_plas.normal()
+        absn = np.linalg.norm(n, axis=2)
+        unitn = n * (1. / absn)[:,:,None]
+        fac = np.sqrt(absn/float(absn.size))
+        calc_qr_twice()
+
+        print('  2e: forming a matrix')
+        matrix = np.ascontiguousarray(np.zeros((nPoints, wf.nSegments)))
+        calc_qr_twice()
+
+        print('  2f: populating the matrix')
+        for i in range(wf.nSegments):
+            dB_dsc_i = dB_dsc[i].reshape(n.shape)
+            matrix[:,i] = (fac*np.sum(dB_dsc_i * unitn, axis=2)).reshape((-1))
+        calc_qr_twice()
+
 
