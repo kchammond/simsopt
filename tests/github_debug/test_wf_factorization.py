@@ -301,7 +301,7 @@ class WireframeFactorizationTests(unittest.TestCase):
     
         # Check the inputs
         m, n = Amat.shape
-        n_C, p = Ctra.shape
+        n_C, p = Ctra10.shape
                 
         if np.isscalar(reg_W):
             Wmat = reg_W*np.eye(n)
@@ -324,7 +324,7 @@ class WireframeFactorizationTests(unittest.TestCase):
         print('        R.T[:,:6] = ')
         print_matrix(Rmat.T[:,:6])
 
-        print('Trial 11: Performing the exact sequence of steps in regularized_constrained_least_squares up to QR')
+        print('Trial 11: Performing the exact sequence of steps in regularized_constrained_least_squares up to QR, but performing the QR twice')
         A11, b11 = bnorm_obj_matrices(wf, surf_plas)
         C11, d11 = wf.constraint_matrices(assume_no_crossings=False,
                                         remove_constrained_segments=True)
@@ -361,6 +361,12 @@ class WireframeFactorizationTests(unittest.TestCase):
             else:
                 raise ValueError('W must be a scalar, 1d array, or 2d array')
                 
+        # Compute the QR factorization of the transpose of the constraint matrix
+        Qfull, Rtall = scipy.linalg.qr(Ctra11)
+        Q1mat = Qfull[:,:p]  # Orthonormal vectors in the constrained subspace
+        Q2mat = Qfull[:,p:]  # Orthonormal vectors in the free subspace
+        Rmat = Rtall[:p,:]
+
         # Compute the QR factorization of the transpose of the constraint matrix
         Qfull, Rtall = scipy.linalg.qr(Ctra11)
         Q1mat = Qfull[:,:p]  # Orthonormal vectors in the constrained subspace
