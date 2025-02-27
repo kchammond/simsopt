@@ -462,6 +462,20 @@ class WireframeFactorizationTests(unittest.TestCase):
         mf_wf.set_points(surf_plas.gamma().reshape((-1,3)))
         calc_qr_twice()
 
+        print('  2h: performing matrix calculation steps all at once')
+        points = mf_wf.get_points_cart_ref()
+        nPoints = len(points)
+        n = surf_plas.normal()
+        absn = np.linalg.norm(n, axis=2)
+        unitn = n * (1. / absn)[:,:,None]
+        fac = np.sqrt(absn/float(absn.size))
+        matrix = np.ascontiguousarray(np.zeros((nPoints, wf.nSegments)))
+        dB_dsc = mf_wf.dB_by_dsegmentcurrents(0)
+        for i in range(wf.nSegments):
+            dB_dsc_i = dB_dsc[i].reshape(n.shape)
+            matrix[:,i] = (fac*np.sum(dB_dsc_i * unitn, axis=2)).reshape((-1))
+        calc_qr_twice()
+
         print('  2c: calculating the A matrix (unweighted)')
         Aunw = mf_wf.dBnormal_by_dsegmentcurrents_matrix(surf_plas)
         calc_qr_twice()
@@ -499,20 +513,6 @@ class WireframeFactorizationTests(unittest.TestCase):
         print('  2g: calculating the A matrix (weighted)')
         A = mf_wf.dBnormal_by_dsegmentcurrents_matrix(surf_plas,
                 area_weighted=True)
-        calc_qr_twice()
-
-        print('  2h: performing matrix calculation steps all at once')
-        points = mf_wf.get_points_cart_ref()
-        nPoints = len(points)
-        n = surf_plas.normal()
-        absn = np.linalg.norm(n, axis=2)
-        unitn = n * (1. / absn)[:,:,None]
-        fac = np.sqrt(absn/float(absn.size))
-        matrix = np.ascontiguousarray(np.zeros((nPoints, wf.nSegments)))
-        dB_dsc = mf_wf.dB_by_dsegmentcurrents(0)
-        for i in range(wf.nSegments):
-            dB_dsc_i = dB_dsc[i].reshape(n.shape)
-            matrix[:,i] = (fac*np.sum(dB_dsc_i * unitn, axis=2)).reshape((-1))
         calc_qr_twice()
 
         print('Is `A` the same as `matrix`? ', np.allclose(A, matrix))
